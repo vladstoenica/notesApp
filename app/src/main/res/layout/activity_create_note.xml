@@ -10,7 +10,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/_40sdp"
+        android:layout_marginTop="@dimen/_1sdp"
         android:clipToPadding="false"
         android:paddingBottom="10dp">
 
@@ -40,7 +40,7 @@
                 android:background="@drawable/background_done_button"
                 android:contentDescription="@string/app_name"
                 android:padding="@dimen/_4sdp"
-                android:src="@drawable/ic_baseline_done_24"
+                android:src="@drawable/ic_delete_outline"
                 app:tint="@color/colorACCENT"
                 app:layout_constraintBottom_toBottomOf="@id/imageBack"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -84,7 +84,8 @@
                 android:layout_marginStart="@dimen/_12sdp"
                 android:background="@drawable/background_input_indicator"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/inputNote"/>
+                app:layout_constraintTop_toTopOf="@id/inputNote"
+                />
 
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/imageNote"
@@ -113,6 +114,32 @@
                 app:layout_constraintEnd_toEndOf="@id/imageNote"
                 app:layout_constraintTop_toTopOf="@id/imageNote"/>
 
+            <LinearLayout
+                android:id="@+id/layoutWebURL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:layout_marginEnd="@dimen/_12sdp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/imageNote"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/textWebURL"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:autoLink="web"
+                    android:fontFamily="@font/poppins_regular"
+                    android:includeFontPadding="false"
+                    android:textSize="@dimen/_13ssp"/>
+
+
+
+            </LinearLayout>
+
             <EditText
                 android:id="@+id/inputNote"
                 android:layout_width="0dp"
@@ -138,7 +165,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/viewInputNoteIndicator"
-                app:layout_constraintTop_toBottomOf="@id/imageNote" />
+                app:layout_constraintTop_toBottomOf="@id/layoutWebURL" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -9,20 +9,27 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.LabeledIntent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.telecom.TelecomManager;
+import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -38,6 +45,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 public class CreateNoteActivity extends AppCompatActivity {
 
@@ -46,6 +54,8 @@ public class CreateNoteActivity extends AppCompatActivity {
     private TextView textDateTime;
     private View viewInputNoteIndicator;
     private ImageView imageNote;
+    private TextView textWebURL;
+    private LinearLayout layoutWebURL;
 
     private String selectedNoteColor;
     private String selectedImagePath;
@@ -53,6 +63,8 @@ public class CreateNoteActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_STORAGE_PERMISSION = 1;
     private static final int REQUEST_CODE_SELECT_IMAGE = 2;
+
+    private AlertDialog dialogAddURL;
 
     private Note alreadyAvailableNote;
 
@@ -65,7 +77,17 @@ public class CreateNoteActivity extends AppCompatActivity {
         imageBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                hideKeyboard(CreateNoteActivity.this);
                 onBackPressed();
+            }
+        });
+
+        ImageView imageSave = findViewById(R.id.imageSave);
+        imageSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideKeyboard(CreateNoteActivity.this);
+                finish();
             }
         });
 
@@ -74,19 +96,13 @@ public class CreateNoteActivity extends AppCompatActivity {
         textDateTime = findViewById(R.id.textDateTime);
         viewInputNoteIndicator = findViewById(R.id.viewInputNoteIndicator);
         imageNote = findViewById(R.id.imageNote);
+        textWebURL = findViewById(R.id.textWebURL);
+        layoutWebURL = findViewById(R.id.layoutWebURL);
 
         textDateTime.setText(
                 new SimpleDateFormat("EEE, dd MMM yyyy HH:mm", Locale.getDefault())
-                .format(new Date())
+                        .format(new Date())
         );
-
-        ImageView imageSave = findViewById(R.id.imageSave);
-        imageSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveNote();
-            }
-        });
 
         selectedNoteColor = "#333333";   //default note color
         selectedImagePath = "";
@@ -111,6 +127,18 @@ public class CreateNoteActivity extends AppCompatActivity {
 
     }
 
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+
     private void setViewOrUpdateNote(){
         inputNoteTitle.setText(alreadyAvailableNote.getTitle());
         inputNoteText.setText(alreadyAvailableNote.getNoteText());
@@ -123,13 +151,22 @@ public class CreateNoteActivity extends AppCompatActivity {
             selectedImagePath = alreadyAvailableNote.getImagePath();
         }
 
-        //same as image for url
+        if(alreadyAvailableNote.getWebLink() != null && !alreadyAvailableNote.getWebLink().trim().isEmpty()){
+            textWebURL.setText(alreadyAvailableNote.getWebLink());
+            layoutWebURL.setVisibility(View.VISIBLE);
+        }
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        saveNote();
-//    }
+    @Override
+    public void onBackPressed() {
+        if(inputNoteTitle.getText().toString().trim().isEmpty()){
+            finish();
+        } else {
+            saveNote();
+        }
+    }
+
+
 
     //validations
     private void saveNote(){
@@ -148,6 +185,10 @@ public class CreateNoteActivity extends AppCompatActivity {
         note.setDateTime(textDateTime.getText().toString());
         note.setColor(selectedNoteColor);
         note.setImagePath(selectedImagePath);
+
+        if(layoutWebURL.getVisibility() == View.VISIBLE){
+            note.setWebLink(textWebURL.getText().toString());
+        }
 
         if(alreadyAvailableNote != null){
             note.setId(alreadyAvailableNote.getId());   //we have set "replace in noteDao so our old note will be deleted and a new one with the same id created
@@ -293,6 +334,12 @@ public class CreateNoteActivity extends AppCompatActivity {
             }
         });
 
+        layoutMiscellaneous.findViewById(R.id.layoutAddUrl).setOnClickListener(v -> {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            showAddURLDialog();
+        });
+
+
         if(alreadyAvailableNote != null){
             layoutMiscellaneous.findViewById(R.id.layoutDeleteNote).setVisibility(View.VISIBLE);
             layoutMiscellaneous.findViewById(R.id.layoutDeleteNote).setOnClickListener(new View.OnClickListener() {
@@ -410,6 +457,40 @@ public class CreateNoteActivity extends AppCompatActivity {
             cursor.close();
         }
         return filePath;
+    }
+
+    private void showAddURLDialog() {
+        if (dialogAddURL == null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(CreateNoteActivity.this);
+            View view = LayoutInflater.from(this)
+                    .inflate(R.layout.layout_add_url, findViewById(R.id.layoutAddUrl));
+            builder.setView(view);
+
+            dialogAddURL = builder.create();
+            if (dialogAddURL.getWindow() != null) {
+                dialogAddURL.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+            }
+
+            final EditText inputURL = view.findViewById(R.id.inputURL);
+            inputURL.requestFocus();
+
+            view.findViewById(R.id.textAdd).setOnClickListener(v -> {
+                final String inputURLStr = inputURL.getText().toString().trim();
+
+                if (inputURLStr.isEmpty()) {
+                    Toast.makeText(CreateNoteActivity.this, "Enter URL", Toast.LENGTH_SHORT).show();
+                } else if (!Patterns.WEB_URL.matcher(inputURLStr).matches()) {
+                    Toast.makeText(CreateNoteActivity.this, "Enter valid URL", Toast.LENGTH_SHORT).show();
+                } else {
+                    textWebURL.setText(inputURL.getText().toString());
+                    layoutWebURL.setVisibility(View.VISIBLE);
+                    dialogAddURL.dismiss();
+                }
+            });
+
+            view.findViewById(R.id.textCancel).setOnClickListener(v -> dialogAddURL.dismiss());
+        }
+        dialogAddURL.show();
     }
 
 }

@@ -5,6 +5,7 @@
       <map>
         <entry key="app/src/main/res/drawable/background_add_button.xml" value="0.2417721518987342" />
         <entry key="app/src/main/res/drawable/background_delete.xml" value="0.2543918918918919" />
+        <entry key="app/src/main/res/drawable/background_dialog.xml" value="0.2543918918918919" />
         <entry key="app/src/main/res/drawable/background_done_button.xml" value="0.19163879598662206" />
         <entry key="app/src/main/res/drawable/background_input_indicator.xml" value="0.19163879598662206" />
         <entry key="app/src/main/res/drawable/background_miscellaneous.xml" value="0.2543918918918919" />
@@ -16,9 +17,10 @@
         <entry key="app/src/main/res/drawable/background_note_color_5.xml" value="0.2543918918918919" />
         <entry key="app/src/main/res/drawable/background_search.xml" value="0.2417721518987342" />
         <entry key="app/src/main/res/drawable/ic_baseline_done_24.xml" value="0.19163879598662206" />
-        <entry key="app/src/main/res/layout/activity_create_note.xml" value="0.1831081081081081" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.625" />
+        <entry key="app/src/main/res/layout/activity_create_note.xml" value="0.165" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.165" />
         <entry key="app/src/main/res/layout/item_container_note.xml" value="0.1375" />
+        <entry key="app/src/main/res/layout/layout_add_url.xml" value="0.24391891891891893" />
         <entry key="app/src/main/res/layout/layout_miscellaneous.xml" value="0.24391891891891893" />
       </map>
     </option>

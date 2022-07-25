@@ -56,7 +56,11 @@
             android:inputType="text"
             android:textColor="@color/colorWhite"
             android:textColorHint="@color/textHint"
-            android:textSize="13dp">
+            android:textSize="@dimen/_13ssp"
+            android:gravity="center_vertical"
+            android:cursorVisible="false"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
         </EditText>
 
     </LinearLayout>
@@ -108,25 +112,25 @@
             app:tint="@color/colorIcons">
         </ImageView>
 
-        <TextView
-            android:id="@+id/nrOfNotes"
-            android:layout_width="@dimen/_50sdp"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/poppins_medium"
-            android:includeFontPadding="false"
-            android:text=""
-            android:textColor="@color/colorWhite"
-            android:textSize="@dimen/_10sdp" />
+<!--        <TextView-->
+<!--            android:id="@+id/nrOfNotes"-->
+<!--            android:layout_width="@dimen/_50sdp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:fontFamily="@font/poppins_medium"-->
+<!--            android:includeFontPadding="false"-->
+<!--            android:text=""-->
+<!--            android:textColor="@color/colorWhite"-->
+<!--            android:textSize="@dimen/_10sdp" />-->
 
-        <TextView
-            android:id="@+id/notesBar"
-            android:layout_width="@dimen/_50sdp"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/poppins_medium"
-            android:includeFontPadding="false"
-            android:text="Notes"
-            android:textColor="@color/colorWhite"
-            android:textSize="@dimen/_10sdp" />
+<!--        <TextView-->
+<!--            android:id="@+id/notesBar"-->
+<!--            android:layout_width="@dimen/_50sdp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:fontFamily="@font/poppins_medium"-->
+<!--            android:includeFontPadding="false"-->
+<!--            android:text="Notes"-->
+<!--            android:textColor="@color/colorWhite"-->
+<!--            android:textSize="@dimen/_10sdp" />-->
 
 
     </LinearLayout>

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/_12sdp"
-    android:layout_marginTop="@dimen/_12sdp"
+    android:layout_marginTop="@dimen/_8sdp"
     android:background="@drawable/background_note">
 
 <!--    <com.makeramen.roundedimageview.RoundedImageView-->
@@ -40,7 +40,7 @@
         android:layout_marginBottom="@dimen/_8sdp"
         android:fontFamily="@font/poppins_regular"
         android:includeFontPadding="false"
-        android:textColor="#C3C3C3"
+        android:textColor="#FFFFFF"
         android:textSize="@dimen/_10ssp"/>
 
 <!--    <TextView-->

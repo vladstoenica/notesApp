@@ -2,16 +2,25 @@ package com.stoe.notes3.activities;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.stoe.notes3.R;
 import com.stoe.notes3.activities.CreateNoteActivity;
@@ -35,7 +44,10 @@ public class MainActivity extends AppCompatActivity implements NotesListener {
 
     private int noteClickedPosition = -1;
 
+    private TextView nrOfNotes;
+
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        getSupportActionBar().hide();
@@ -52,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements NotesListener {
             }
         });
 
+        getNotes(REQUEST_CODE_SHOW_NOTES, false);
         notesRecyclerView = findViewById(R.id.notesRecyclerView);
         notesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -59,7 +72,27 @@ public class MainActivity extends AppCompatActivity implements NotesListener {
         notesAdapter = new NotesAdapter(noteList, this);
         notesRecyclerView.setAdapter(notesAdapter);
 
-        getNotes(REQUEST_CODE_SHOW_NOTES, false);
+
+
+        EditText inputSearch = findViewById(R.id.inputSearch);
+        inputSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                notesAdapter.cancelTimer();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(noteList.size() != 0){
+                    notesAdapter.searchNotes(s.toString());
+                }
+            }
+        });
     }
 
     @Override
@@ -71,29 +104,20 @@ public class MainActivity extends AppCompatActivity implements NotesListener {
         startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE);
     }
 
-    private void getNotes(final int requestCode, final boolean isNoteDeleted){
+    private void getNotes(final int requestCode, final boolean isNoteDeleted) {
 
-        class GetNotesTask extends AsyncTask<Void, Void, List<Note>>{
+        @SuppressLint("StaticFieldLeak")
+        class GetNotesTask extends AsyncTask<Void, Void, List<Note>> {
+
             @Override
             protected List<Note> doInBackground(Void... voids) {
-                return NotesDatabase
-                        .getDatabase(getApplicationContext())
+                return NotesDatabase.getDatabase(getApplicationContext())
                         .noteDao().getAllNotes();
             }
 
             @Override
             protected void onPostExecute(List<Note> notes) {
                 super.onPostExecute(notes);
-//                Log.d("My_notes", notes.toString());
-//                if(noteList.size() == 0){               //check if the note list is empty (the app just started) si daca e, punem notitele din DB
-//                    noteList.addAll(notes);
-//                    notesAdapter.notifyDataSetChanged();
-//                } else {                                //else doar o adaugam pe ultima creata
-//                    noteList.add(0, notes.get(0));
-//                    notesAdapter.notifyItemInserted(0);
-//                }
-//                notesRecyclerView.smoothScrollToPosition(0);  //si aratam mereu lista de la 0
-
                 if(requestCode == REQUEST_CODE_SHOW_NOTES){
                     noteList.addAll(notes);
                     notesAdapter.notifyDataSetChanged();   //because request code e show - add al notes from Db to noteList
@@ -115,16 +139,20 @@ public class MainActivity extends AppCompatActivity implements NotesListener {
 
         }
         new GetNotesTask().execute();
+
+//        nrOfNotes = findViewById(R.id.nrOfNotes);
+//        nrOfNotes.setText(String.valueOf(noteList.size()));
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK){
-            getNotes(REQUEST_CODE_SHOW_NOTES, false);    //a note was passed from createActivity and we need to show it too
-        } else if(requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK){
-            if(data != null){
-                getNotes(REQUEST_CODE_UPDATE_NOTE, data.getBooleanExtra("isNoteDeleted", false));  //request code e update si e posibil ca update-ul sa fie un delete (pasam asta din CreateNote - alertDialog yes)
+        if (requestCode == REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
+            getNotes(REQUEST_CODE_ADD_NOTE, false);
+        } else if (requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK) {
+            if (data != null) {
+                getNotes(REQUEST_CODE_UPDATE_NOTE, data.getBooleanExtra("isNoteDeleted", false));
             }
         }
     }
