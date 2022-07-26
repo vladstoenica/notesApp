@@ -16,11 +16,11 @@ DOWNLOAD: https://github.com/vladstoenica/notesApp/releases
 
 ## Screenshots
 
-![App Screenshot](https://i.imgur.com/viki17D.png)
+![App Screenshot](https://i.imgur.com/viki17D.png=230x)
 
-![App Screenshot](https://i.imgur.com/SRQwu1s.png)
+![App Screenshot](https://i.imgur.com/SRQwu1s.png=230x)
 
-![App Screenshot](https://i.imgur.com/AIyi3DW.png)
+![App Screenshot](https://i.imgur.com/AIyi3DW.png=230x)
 
 
 ## Credits
