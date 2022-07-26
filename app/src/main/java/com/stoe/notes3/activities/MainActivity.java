@@ -1,9 +1,12 @@
 package com.stoe.notes3.activities;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -21,16 +24,19 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.stoe.notes3.R;
 import com.stoe.notes3.activities.CreateNoteActivity;
 import com.stoe.notes3.adapters.NotesAdapter;
+import com.stoe.notes3.dao.NoteDao;
 import com.stoe.notes3.database.NotesDatabase;
 import com.stoe.notes3.entities.Note;
 import com.stoe.notes3.listeners.NotesListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends AppCompatActivity implements NotesListener {
 
@@ -44,7 +50,8 @@ public class MainActivity extends AppCompatActivity implements NotesListener {
 
     private int noteClickedPosition = -1;
 
-    private TextView nrOfNotes;
+    private ImageView staggeredView;
+    private ImageView listView;
 
     @Override
 
@@ -73,6 +80,26 @@ public class MainActivity extends AppCompatActivity implements NotesListener {
         notesRecyclerView.setAdapter(notesAdapter);
 
 
+        //buttons in bottom bar
+        staggeredView = findViewById(R.id.imageStaggeredView);
+        staggeredView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                notesRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+//                staggeredView.setVisibility(View.INVISIBLE);
+                //buton 2 visible
+            }
+        });
+
+        listView = findViewById(R.id.imageListView);
+        listView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                notesRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+//                listView.setVisibility(View.INVISIBLE);
+//                staggeredView.setVisibility(View.VISIBLE);
+            }
+        });
 
         EditText inputSearch = findViewById(R.id.inputSearch);
         inputSearch.addTextChangedListener(new TextWatcher() {
@@ -140,8 +167,6 @@ public class MainActivity extends AppCompatActivity implements NotesListener {
         }
         new GetNotesTask().execute();
 
-//        nrOfNotes = findViewById(R.id.nrOfNotes);
-//        nrOfNotes.setText(String.valueOf(noteList.size()));
     }
 
 

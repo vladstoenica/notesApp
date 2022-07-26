@@ -87,30 +87,47 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageView
-            android:id="@+id/imageAddNote"
+            android:id="@+id/imageListView"
             android:layout_width="@dimen/_23sdp"
             android:layout_height="@dimen/_23sdp"
-            android:src="@drawable/ic_add_outline"
-            app:tint="@color/colorIcons">
-        </ImageView>
+            android:src="@drawable/ic_list_view"
+            app:tint="@color/colorIcons"
+            />
 
         <ImageView
-            android:id="@+id/imageAddImage"
+            android:id="@+id/imageStaggeredView"
             android:layout_width="@dimen/_23sdp"
             android:layout_height="@dimen/_23sdp"
-            android:layout_marginStart="@dimen/_15sdp"
-            android:src="@drawable/ic_image"
-            app:tint="@color/colorIcons">
-        </ImageView>
+            android:src="@drawable/ic_grid_view"
+            app:tint="@color/colorIcons"
+            android:layout_marginStart="@dimen/_10sdp"/>
 
-        <ImageView
-            android:id="@+id/imageAddWebLink"
-            android:layout_width="@dimen/_23sdp"
-            android:layout_height="@dimen/_23sdp"
-            android:layout_marginStart="@dimen/_15sdp"
-            android:src="@drawable/ic_web"
-            app:tint="@color/colorIcons">
-        </ImageView>
+
+<!--        <ImageView-->
+<!--            android:id="@+id/imageAddNote"-->
+<!--            android:layout_width="@dimen/_23sdp"-->
+<!--            android:layout_height="@dimen/_23sdp"-->
+<!--            android:src="@drawable/ic_add_outline"-->
+<!--            app:tint="@color/colorIcons">-->
+<!--        </ImageView>-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/imageAddImage"-->
+<!--            android:layout_width="@dimen/_23sdp"-->
+<!--            android:layout_height="@dimen/_23sdp"-->
+<!--            android:layout_marginStart="@dimen/_15sdp"-->
+<!--            android:src="@drawable/ic_image"-->
+<!--            app:tint="@color/colorIcons">-->
+<!--        </ImageView>-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/imageAddWebLink"-->
+<!--            android:layout_width="@dimen/_23sdp"-->
+<!--            android:layout_height="@dimen/_23sdp"-->
+<!--            android:layout_marginStart="@dimen/_15sdp"-->
+<!--            android:src="@drawable/ic_web"-->
+<!--            app:tint="@color/colorIcons">-->
+<!--        </ImageView>-->
 
 <!--        <TextView-->
 <!--            android:id="@+id/nrOfNotes"-->
@@ -118,9 +135,11 @@
 <!--            android:layout_height="wrap_content"-->
 <!--            android:fontFamily="@font/poppins_medium"-->
 <!--            android:includeFontPadding="false"-->
-<!--            android:text=""-->
+<!--            android:text="x "-->
 <!--            android:textColor="@color/colorWhite"-->
-<!--            android:textSize="@dimen/_10sdp" />-->
+<!--            android:textSize="@dimen/_10sdp"-->
+<!--            android:gravity="right"-->
+<!--            android:layout_gravity="center" />-->
 
 <!--        <TextView-->
 <!--            android:id="@+id/notesBar"-->
@@ -130,7 +149,9 @@
 <!--            android:includeFontPadding="false"-->
 <!--            android:text="Notes"-->
 <!--            android:textColor="@color/colorWhite"-->
-<!--            android:textSize="@dimen/_10sdp" />-->
+<!--            android:textSize="@dimen/_10sdp"-->
+<!--            android:layout_gravity="center"-->
+<!--            />-->
 
 
     </LinearLayout>

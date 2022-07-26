@@ -1,5 +1,9 @@
 package com.stoe.notes3.activities;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -25,6 +29,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.telecom.TelecomManager;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,7 +72,9 @@ public class CreateNoteActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_STORAGE_PERMISSION = 1;
     private static final int REQUEST_CODE_SELECT_IMAGE = 2;
 
-    private AlertDialog dialogAddURL;
+//    private AlertDialog dialogAddURL;
+
+    private View addImage;
 
     private Note alreadyAvailableNote;
 
@@ -98,6 +108,34 @@ public class CreateNoteActivity extends AppCompatActivity {
         imageNote = findViewById(R.id.imageNote);
         textWebURL = findViewById(R.id.textWebURL);
         layoutWebURL = findViewById(R.id.layoutWebURL);
+        addImage = findViewById(R.id.layoutAddImage);
+
+        //Add links to note
+        inputNoteText.setLinksClickable(true);
+        inputNoteText.setAutoLinkMask(Linkify.ALL);
+        inputNoteText.setMovementMethod(LinkMovementMethod.getInstance());
+        //If the edit text contains previous text with potential links
+        Linkify.addLinks(inputNoteText, Linkify.ALL);
+
+        inputNoteText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                Linkify.addLinks(s, Linkify.ALL);
+
+            }
+        });
 
         textDateTime.setText(
                 new SimpleDateFormat("EEE, dd MMM yyyy HH:mm", Locale.getDefault())
@@ -159,21 +197,19 @@ public class CreateNoteActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(inputNoteTitle.getText().toString().trim().isEmpty()){
+        if(inputNoteTitle.getText().toString().trim().isEmpty() && inputNoteText.getText().toString().trim().isEmpty()){
             finish();
         } else {
             saveNote();
         }
     }
 
-
-
     //validations
     private void saveNote(){
-        if(inputNoteTitle.getText().toString().trim().isEmpty()) {   //trim scoate spatiile
-            Toast.makeText(this, "Note title cannot be empty", Toast.LENGTH_SHORT).show();
-            return;
-        }
+//        if(inputNoteTitle.getText().toString().trim().isEmpty()) {   //trim scoate spatiile
+//            Toast.makeText(this, "Note title cannot be empty", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
 //        else if(inputNoteText.getText().toString().isEmpty()){
 //            Toast.makeText(this, "Note body cannot be empty", Toast.LENGTH_SHORT).show();        ////////
 //            return;
@@ -250,7 +286,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         layoutMiscellaneous.findViewById(R.id.viewColor2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectedNoteColor = "#fdbe3b";
+                selectedNoteColor = "#D19E33";
                 imageColor1.setImageResource(0);
                 imageColor2.setImageResource(R.drawable.ic_baseline_done_24);
                 imageColor3.setImageResource(0);
@@ -276,7 +312,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         layoutMiscellaneous.findViewById(R.id.viewColor4).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectedNoteColor = "#73C870";
+                selectedNoteColor = "#67BF64";
                 imageColor1.setImageResource(0);
                 imageColor2.setImageResource(0);
                 imageColor3.setImageResource(0);
@@ -289,7 +325,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         layoutMiscellaneous.findViewById(R.id.viewColor5).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectedNoteColor = "#000000";
+                selectedNoteColor = "#0A0A0A";
                 imageColor1.setImageResource(0);
                 imageColor2.setImageResource(0);
                 imageColor3.setImageResource(0);
@@ -301,16 +337,16 @@ public class CreateNoteActivity extends AppCompatActivity {
 
         if(alreadyAvailableNote != null && alreadyAvailableNote.getColor() != null && !alreadyAvailableNote.getColor().trim().isEmpty()){
             switch (alreadyAvailableNote.getColor()){
-                case "#fdbe3b":
+                case "#D19E33":
                     layoutMiscellaneous.findViewById(R.id.viewColor2).performClick();
                     break;
                 case "#C84145":
                     layoutMiscellaneous.findViewById(R.id.viewColor3).performClick();
                     break;
-                case "#73C870":
+                case "#67BF64":
                     layoutMiscellaneous.findViewById(R.id.viewColor4).performClick();
                     break;
-                case "#000000":
+                case "#0A0A0A":
                     layoutMiscellaneous.findViewById(R.id.viewColor5).performClick();
                     break;
             }
@@ -329,16 +365,19 @@ public class CreateNoteActivity extends AppCompatActivity {
                             REQUEST_CODE_STORAGE_PERMISSION
                     );
                 } else {
-                    selectImage();
+                    openFileDialog(v);
                 }
             }
         });
 
         layoutMiscellaneous.findViewById(R.id.layoutAddUrl).setOnClickListener(v -> {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            showAddURLDialog();
+            saveNote();
         });
 
+        if(alreadyAvailableNote == null){
+            inputNoteTitle.requestFocus();
+        }
 
         if(alreadyAvailableNote != null){
             layoutMiscellaneous.findViewById(R.id.layoutDeleteNote).setVisibility(View.VISIBLE);
@@ -400,6 +439,28 @@ public class CreateNoteActivity extends AppCompatActivity {
         gradientDrawable.setColor(Color.parseColor(selectedNoteColor));
     }
 
+
+    ActivityResultLauncher<Intent> sActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if(result.getResultCode() == Activity.RESULT_OK){
+                        Intent data = result.getData();
+                        Uri uri = data.getData();
+                    }
+                }
+            }
+    );
+
+    private void openFileDialog(View view){
+        Intent data = new Intent(Intent.ACTION_PICK);
+        data.setType("image/*");
+        data = Intent.createChooser(data, "Choose an image");
+        startActivityForResult(data, REQUEST_CODE_SELECT_IMAGE);
+    }
+
+
     private void selectImage(){
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         if(intent.resolveActivity(getPackageManager()) != null){
@@ -459,38 +520,38 @@ public class CreateNoteActivity extends AppCompatActivity {
         return filePath;
     }
 
-    private void showAddURLDialog() {
-        if (dialogAddURL == null) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(CreateNoteActivity.this);
-            View view = LayoutInflater.from(this)
-                    .inflate(R.layout.layout_add_url, findViewById(R.id.layoutAddUrl));
-            builder.setView(view);
-
-            dialogAddURL = builder.create();
-            if (dialogAddURL.getWindow() != null) {
-                dialogAddURL.getWindow().setBackgroundDrawable(new ColorDrawable(0));
-            }
-
-            final EditText inputURL = view.findViewById(R.id.inputURL);
-            inputURL.requestFocus();
-
-            view.findViewById(R.id.textAdd).setOnClickListener(v -> {
-                final String inputURLStr = inputURL.getText().toString().trim();
-
-                if (inputURLStr.isEmpty()) {
-                    Toast.makeText(CreateNoteActivity.this, "Enter URL", Toast.LENGTH_SHORT).show();
-                } else if (!Patterns.WEB_URL.matcher(inputURLStr).matches()) {
-                    Toast.makeText(CreateNoteActivity.this, "Enter valid URL", Toast.LENGTH_SHORT).show();
-                } else {
-                    textWebURL.setText(inputURL.getText().toString());
-                    layoutWebURL.setVisibility(View.VISIBLE);
-                    dialogAddURL.dismiss();
-                }
-            });
-
-            view.findViewById(R.id.textCancel).setOnClickListener(v -> dialogAddURL.dismiss());
-        }
-        dialogAddURL.show();
-    }
+//    private void showAddURLDialog() {
+//        if (dialogAddURL == null) {
+//            AlertDialog.Builder builder = new AlertDialog.Builder(CreateNoteActivity.this);
+//            View view = LayoutInflater.from(this)
+//                    .inflate(R.layout.layout_add_url, findViewById(R.id.layoutAddUrl));
+//            builder.setView(view);
+//
+//            dialogAddURL = builder.create();
+//            if (dialogAddURL.getWindow() != null) {
+//                dialogAddURL.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+//            }
+//
+//            final EditText inputURL = view.findViewById(R.id.inputURL);
+//            inputURL.requestFocus();
+//
+//            view.findViewById(R.id.textAdd).setOnClickListener(v -> {
+//                final String inputURLStr = inputURL.getText().toString().trim();
+//
+//                if (inputURLStr.isEmpty()) {
+//                    Toast.makeText(CreateNoteActivity.this, "Enter URL", Toast.LENGTH_SHORT).show();
+//                } else if (!Patterns.WEB_URL.matcher(inputURLStr).matches()) {
+//                    Toast.makeText(CreateNoteActivity.this, "Enter valid URL", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    textWebURL.setText(inputURL.getText().toString());
+//                    layoutWebURL.setVisibility(View.VISIBLE);
+//                    dialogAddURL.dismiss();
+//                }
+//            });
+//
+//            view.findViewById(R.id.textCancel).setOnClickListener(v -> dialogAddURL.dismiss());
+//        }
+//        dialogAddURL.show();
+//    }
 
 }

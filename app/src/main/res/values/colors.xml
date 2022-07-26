@@ -12,10 +12,10 @@
     <color name="colorDefaultNoteColor">#333333</color>
     <color name="colorNoteSubtitleText">#fafafa</color>
     <color name="colorMiscellaneousBackground">#222222</color>
-    <color name="colorNoteColor2">#fdbe3b</color>
+    <color name="colorNoteColor2">#D19E33</color>
     <color name="colorNoteColor3">#C84145</color>
-    <color name="colorNoteColor4">#73C870</color>
-    <color name="colorNoteColor5">#000000</color>
+    <color name="colorNoteColor4">#67BF64</color>
+    <color name="colorNoteColor5">#0A0A0A</color>
     <color name="colorDelete">#ff4842</color>
     <color name="searchBackground">#333333</color>
     <color name="colorSecondary">#FDBE3B</color>
